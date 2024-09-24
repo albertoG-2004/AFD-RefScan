@@ -32,6 +32,10 @@ class Automata:
             elif char == ' ':
                 self.state = 'spacekey'
                 self.current_reference += char
+            elif char == ")":
+                self.state = 'finalParenthesis'
+                self.current_reference += char
+                self.store_reference()
             else:
                 self.reset()
 
