@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 from automata import Automata
 from readerPdf import read_pdf
+from readerDocx import read_docx
 from createReport import create_report
 
 class AutomataInterfaz:
@@ -17,7 +18,7 @@ class AutomataInterfaz:
         self.title_label.pack(pady=20)
 
         self.label = tk.Label(
-            root, text="Selecciona un archivo PDF para buscar referencias:",
+            root, text="Selecciona un archivo PDF o DOCX para buscar referencias:",
             font=("Helvetica", 12), bg="#2c3e50", fg="#bdc3c7"
         )
         self.label.pack(pady=10)
@@ -25,6 +26,12 @@ class AutomataInterfaz:
         self.file_button = tk.Button(
             root, text="Seleccionar PDF", font=("Helvetica", 12, "bold"), bg="#3498db", fg="white",
             relief="flat", padx=10, pady=5, command=self.load_pdf
+        )
+        self.file_button.pack(pady=20)
+
+        self.file_button = tk.Button(
+            root, text="Seleccionar DOCX", font=("Helvetica", 12, "bold"), bg="#3498db", fg="white",
+            relief="flat", padx=10, pady=5, command=self.load_docx
         )
         self.file_button.pack(pady=20)
 
@@ -49,6 +56,25 @@ class AutomataInterfaz:
                     self.show_no_references_popup()  
             except Exception as e:
                 self.show_error_popup(f"No se pudo leer el archivo PDF: {e}")
+
+    def load_docx(self):
+        file_path = filedialog.askopenfilename(filetypes=[("DOCX Files", "*.docx")])
+        if file_path:
+            try:
+                text = read_docx(file_path)
+
+                if not isinstance(text, str):
+                    raise ValueError("El texto extraído no es una cadena.")
+                self.references = self.automata.find_references(text)
+
+                if self.references:
+                    create_report(self.references, "Referencias_encontradas.csv")
+                    self.show_success_popup()  
+                    self.show_references_popup()  
+                else:
+                    self.show_no_references_popup()  
+            except Exception as e:
+                self.show_error_popup(f"No se pudo leer el archivo DOCX: {e}")
 
     def show_references_popup(self):
         popup = tk.Toplevel(self.root)

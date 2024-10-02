@@ -23,11 +23,21 @@ class Automata:
             if char.islower() or char in 'áéíóú':
                 self.state = 'minus'
                 self.current_reference += char
+            elif char in 'áéíóú':
+                self.state = 'stress'
+                self.current_reference += char
             else:
                 self.reset()
-        
+
+        elif self.state == 'stress':
+            if char.islower():
+                self.state = 'minus'
+                self.current_reference += char
+            else:
+                self.reset()
+
         elif self.state == 'minus':
-            if char.islower() or char in 'áéíóú':
+            if char.islower():
                 self.current_reference += char
             elif char == ' ':
                 self.state = 'spacekey'
