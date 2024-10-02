@@ -74,7 +74,6 @@ class Automata:
         elif self.state == 'q8':
             if char.islower() and char not in 'áéíóú':
                 self.current_reference += char
-                print("q8")
             elif char in 'áéíóú':
                 self.state = 'q9'
                 self.current_reference += char
