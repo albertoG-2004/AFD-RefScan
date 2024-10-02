@@ -2,74 +2,107 @@ class Automata:
     def __init__(self):
         self.referencias = []
         self.current_reference = ""
-        self.state = 'start'
+        self.state = 'A'
 
     def transition(self, char, line_number, char_position):
-        if self.state == 'start':
+        if self.state == 'A':
             if char == '(':
-                self.state = 'initialParenthesis'
+                self.state = 'q1'
                 self.current_reference += char
             else:
                 self.reset()
         
-        elif self.state == 'initialParenthesis':
-            if char.isupper():
-                self.state = "mayus"
+        elif self.state == 'q1':
+            if char.isupper() and char not in 'ÁÉÍÓÚ':
+                self.state = 'q2'
+                self.current_reference += char
+            elif char in 'ÁÉÍÓÚ':
+                self.state = 'q3'
                 self.current_reference += char
             else:
                 self.reset()
 
-        elif self.state == 'mayus':
-            if char.islower() or char in 'áéíóú':
-                self.state = 'minus'
+        elif self.state == 'q2':
+            if char.islower() and char not in 'áéíóú':
+                self.state = 'q8'
                 self.current_reference += char
             elif char in 'áéíóú':
-                self.state = 'stress'
+                self.state = 'q3'
                 self.current_reference += char
             else:
                 self.reset()
 
-        elif self.state == 'stress':
-            if char.islower():
-                self.state = 'minus'
+        elif self.state == 'q3':
+            if char.islower() and char not in 'áéíóú':
+                self.state = 'q5'
                 self.current_reference += char
             else:
                 self.reset()
 
-        elif self.state == 'minus':
-            if char.islower():
+        elif self.state == 'q5':
+            if char.islower() and char not in 'áéíóú':
                 self.current_reference += char
             elif char == ' ':
-                self.state = 'spacekey'
+                self.state = 'q6'
                 self.current_reference += char
             elif char == ")":
-                self.state = 'finalParenthesis'
+                self.state = 'q4'
+                self.current_reference += char
+                self.store_reference(line_number, char_position)
+            else:
+                self.reset()
+            
+        elif self.state == 'q6':
+            if char == ' ':
+                pass
+            elif char.isdigit():
+                self.state = 'q7'
+                self.current_reference += char
+            else:
+                self.reset()
+
+        elif self.state == 'q7':
+            if char.isdigit():
+                self.current_reference += char
+            elif char == ')':
+                self.state = 'q4'
                 self.current_reference += char
                 self.store_reference(line_number, char_position)
             else:
                 self.reset()
 
-        elif self.state == 'spacekey':
-            if char == ' ':
-                pass
-            elif char.isdigit():
-                self.state = 'int'
+        elif self.state == 'q8':
+            if char.islower() and char not in 'áéíóú':
                 self.current_reference += char
+                print("q8")
+            elif char in 'áéíóú':
+                self.state = 'q9'
+                self.current_reference += char
+            elif char == ' ':
+                self.state = 'q6'
+                self.current_reference += char
+            elif char == ")":
+                self.state = 'q4'
+                self.current_reference += char
+                self.store_reference(line_number, char_position)
             else:
                 self.reset()
-
-        elif self.state == 'int':
-            if char.isdigit():
+        
+        elif self.state == 'q9':
+            if char.islower() and char not in 'áéíóú':
                 self.current_reference += char
-            elif char == ')':
-                self.state = 'finalParenthesis'
+            elif char == ' ':
+                self.state = 'q6'
+                self.current_reference += char
+            elif char == ")":
+                self.state = 'q4'
                 self.current_reference += char
                 self.store_reference(line_number, char_position)
             else:
                 self.reset()
 
     def reset(self):
-        self.state = 'start'
+        self.state = 'A'
         self.current_reference = ""
 
     def store_reference(self, line_number, char_position):
@@ -84,7 +117,7 @@ class Automata:
     def find_references(self, text):
         self.referencias = []
         self.current_reference = ""
-        self.state = 'start'
+        self.state = 'A'
         lines = text.splitlines()
         for line_number, line in enumerate(lines, start=1):
             for char_position, char in enumerate(line, start=1):
