@@ -24,81 +24,70 @@ class Automata:
 
         elif self.state == 'q2':
             if char.islower() and char not in 'áéíóú':
-                self.state = 'q8'
                 self.current_reference += char
             elif char in 'áéíóú':
                 self.state = 'q3'
+                self.current_reference += char
+            elif char == ' ':
+                self.state = 'q7'
                 self.current_reference += char
             else:
                 self.reset()
 
         elif self.state == 'q3':
-            if char.islower() and char not in 'áéíóú':
-                self.state = 'q5'
-                self.current_reference += char
-            else:
-                self.reset()
-
-        elif self.state == 'q5':
-            if char.islower() and char not in 'áéíóú':
+            if char.islower():
                 self.current_reference += char
             elif char == ' ':
-                self.state = 'q6'
-                self.current_reference += char
-            elif char == ")":
-                self.state = 'q4'
-                self.current_reference += char
-                self.store_reference(line_number, char_position)
-            else:
-                self.reset()
-            
-        elif self.state == 'q6':
-            if char == ' ':
-                pass
-            elif char.isdigit():
                 self.state = 'q7'
                 self.current_reference += char
             else:
                 self.reset()
 
         elif self.state == 'q7':
+            if char == ' ':
+                pass  
+            elif char.isdigit():
+                self.state = 'q8'
+                self.current_reference += char
+            elif char == ')':
+                self.state = 'q11'
+                self.current_reference += char
+                self.store_reference(line_number, char_position)
+            else:
+                self.reset()
+            
+        elif self.state == 'q8':
             if char.isdigit():
                 self.current_reference += char
             elif char == ')':
-                self.state = 'q4'
+                self.state = 'q11'
+                self.current_reference += char
+                self.store_reference(line_number, char_position)
+            else:
+                self.reset()
+                
+        elif self.state == 'q9':
+            if char.isdigit():
+                self.current_reference += char
+            elif char == ')':
+                self.state = 'q11'
+                self.current_reference += char
+                self.store_reference(line_number, char_position)
+            else:
+                self.reset()
+                
+        elif self.state == 'q10':
+            if char.isdigit():
+                self.current_reference += char
+            elif char == ')':
+                self.state = 'q11'
                 self.current_reference += char
                 self.store_reference(line_number, char_position)
             else:
                 self.reset()
 
-        elif self.state == 'q8':
-            if char.islower() and char not in 'áéíóú':
-                self.current_reference += char
-            elif char in 'áéíóú':
-                self.state = 'q9'
-                self.current_reference += char
-            elif char == ' ':
-                self.state = 'q6'
-                self.current_reference += char
-            elif char == ")":
-                self.state = 'q4'
-                self.current_reference += char
-                self.store_reference(line_number, char_position)
-            else:
-                self.reset()
-        
-        elif self.state == 'q9':
-            if char.islower() and char not in 'áéíóú':
-                self.current_reference += char
-            elif char == ' ':
-                self.state = 'q6'
-                self.current_reference += char
-            elif char == ")":
-                self.state = 'q4'
-                self.current_reference += char
-                self.store_reference(line_number, char_position)
-            else:
-                self.reset()
+        elif self.state == 'q11':
+            self.reset()
 
     def reset(self):
         self.state = 'A'
